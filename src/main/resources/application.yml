@@ -1,5 +1,6 @@
 server:
   port: 8080 # ?? ?? ????
+  address: 0.0.0.0  # 추가: 모든 IP에서 접근 허용
 
 spring:
   # H2 Database ??
@@ -15,6 +16,8 @@ spring:
     console: # H2 DB? ??? ??? ? ?? ??
       enabled: true           # H2 Console ?? ??
       path: /h2-console       # H2 Console ?? ??
+      settings:
+        web-allow-others: true  # 추가: 외부 접속 허용
 
   # JPA ??
   jpa:
