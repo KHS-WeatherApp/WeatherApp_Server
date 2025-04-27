@@ -20,10 +20,10 @@ public class OpenApiService {
         this.openApiManager = openApiManager;
     }
 
-    public ResponseEntity<?> executeApi(Map<String, Object> params) throws Exception {
+    public ResponseEntity<?> executeApi(Map<String, Object> params,String flag) throws Exception {
         log.info(">> ActionService executeAction : {}", params);
 
-        Optional<Map<String, Object>> oData = openApiManager.executeContext(params);
+        Optional<Map<String, Object>> oData = openApiManager.executeContext(params,flag);
         return oData.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 }

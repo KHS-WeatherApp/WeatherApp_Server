@@ -23,7 +23,7 @@ public class OpenApiController {
         log.info(">>>> mathod  /api/executeModule param : {}", params);
         ResponseEntity<?> retMap = null;
         try {
-            retMap = openApiService.executeApi(params);
+            retMap = openApiService.executeApi(params, "weather"); //2025.04.13 이수연 flag로 분기처리
         } catch (Exception e) {
             log.error(">> ActionController executeModule e : {}", e.toString());
         } finally
@@ -32,4 +32,22 @@ public class OpenApiController {
 
         }
     }
+
+    //2025.04.13 이수연 추가
+    @SuppressWarnings("finally")
+    @PostMapping("/api/airPollution")
+    public ResponseEntity<?> executeModuleAirPollution(@RequestBody Map<String, Object> params) {
+        log.info(">>>> method  /api/executeModuleAirPollution param : {}", params);
+        ResponseEntity<?> retMap = null;
+        try {
+            retMap = openApiService.executeApi(params,"airPollution");//2025.04.13 이수연 flag로 분기처리
+        } catch (Exception e) {
+            log.error(">> ActionController executeModule e : {}", e.toString());
+        } finally
+        {
+            return Optional.ofNullable(retMap).orElse(ResponseEntity.notFound().build());
+
+        }
+    }
+
 }
