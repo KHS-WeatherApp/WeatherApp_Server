@@ -1,31 +1,33 @@
 server:
-  port: 8080 # ?? ?? ????
-  address: 0.0.0.0  # 추가: 모든 IP에서 접근 허용
+  port: 8080
+  address: 0.0.0.0 # 추가: 모든 IP에서 접근 허용
 
 spring:
-  # H2 Database ??
+  # Oracle Database 설정
   datasource:
-    driver-class-name: org.h2.Driver
-    url: 'jdbc:h2:mem:test'   # H2 DB ?? ?? (In-Memory Mode)
-    #url: 'jdbc:h2:~/test'    # H2 DB ?? ?? (Embedded Mode)
-    username: username        # H2 DB ?? ID (??? ??)
-    password: password        # H2 DB ?? PW (??? ??)
+    driver-class-name: oracle.jdbc.OracleDriver
+    url: jdbc:oracle:thin:@61.73.18.134:1521:MYXE
+    username: sys
+    password: Akstp3ckd
 
-  # H2 Console ??
-  h2:
-    console: # H2 DB? ??? ??? ? ?? ??
-      enabled: true           # H2 Console ?? ??
-      path: /h2-console       # H2 Console ?? ??
-      settings:
-        web-allow-others: true  # 추가: 외부 접속 허용
-
-  # JPA ??
+  # JPA 설정
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
+    database-platform: org.hibernate.dialect.OracleDialect
     hibernate:
-      ddl-auto: create        # DB ??? ?? (none, create, create-drop, update, validate)
+      ddl-auto: update  # Oracle에서는 update 권장
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.H2Dialect
-        format_sql: true      # ?? ?? ?? (??)
-        show_sql: true        # ?? ?? ??
+        dialect: org.hibernate.dialect.OracleDialect
+        format_sql: true
+        show_sql: true
+        # Oracle 특화 설정
+        jdbc:
+          batch_size: 20
+        connection:
+          characterEncoding: UTF-8
+          useUnicode: true
+
+  # H2 Console 비활성화 (Oracle 사용 시 불필요)
+  # h2:
+  #   console:
+  #     enabled: false
