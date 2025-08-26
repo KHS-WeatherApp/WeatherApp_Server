@@ -3,31 +3,28 @@ server:
   address: 0.0.0.0 # 추가: 모든 IP에서 접근 허용
 
 spring:
-  # Oracle Database 설정
   datasource:
     driver-class-name: oracle.jdbc.OracleDriver
-    url: jdbc:oracle:thin:@61.73.18.134:1521:MYXE
+    url: jdbc:oracle:thin:@//61.73.18.134:1521/MYXE
     username: sys
     password: Akstp3ckd
+    hikari:
+      pool-name: HikariPool-Oracle
+      data-source-properties:
+        internal_logon: SYSDBA
+      maximum-pool-size: 5
+      connection-test-query: "SELECT 1 FROM DUAL"
 
-  # JPA 설정
-  jpa:
-    database-platform: org.hibernate.dialect.OracleDialect
-    hibernate:
-      ddl-auto: update  # Oracle에서는 update 권장
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.OracleDialect
-        format_sql: true
-        show_sql: true
-        # Oracle 특화 설정
-        jdbc:
-          batch_size: 20
-        connection:
-          characterEncoding: UTF-8
-          useUnicode: true
+      jpa:
+        open-in-view: false
+        # SYS로는 스키마 변경을 피하는 게 안전
+        hibernate:
+          ddl-auto: none
+        properties:
+          hibernate:
+            format_sql: true
+            show_sql: true
 
-  # H2 Console 비활성화 (Oracle 사용 시 불필요)
-  # h2:
-  #   console:
-  #     enabled: false
+    logging:
+      level:
+        org.hibernate.SQL: debug
