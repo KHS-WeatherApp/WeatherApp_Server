@@ -118,6 +118,12 @@ fabric.properties
 # Compiled class file
 *.class
 
+# Build output directories
+bin/
+build/
+target/
+out/
+
 # Log file
 *.log
 
