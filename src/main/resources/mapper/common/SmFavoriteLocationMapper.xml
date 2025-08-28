@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    사이드메뉴 즐겨찾기 위치 MyBatis Mapper XML
+    
+    COM_FAVORITE_LOCATIONS 테이블과의 모든 SQL 쿼리를 정의
+    SmFavoriteLocationMapper 인터페이스와 연동하여 동작
+    
+    테이블 구조:
+    - SEQ_NO: 시퀀스 번호 (Primary Key)
+    - DEVICE_ID: 디바이스 고유 식별자
+    - LATITUDE: 위도
+    - LONGITUDE: 경도
+    - ADDRESS_NAME: 전체 주소명
+    - REGION_1DEPTH_NAME: 시/도
+    - REGION_2DEPTH_NAME: 구/군
+    - REGION_3DEPTH_NAME: 동/읍/면
+    - SORT_ORDER: 사용자 정렬순서
+    - CREATED_AT: 생성 시간
+    
+    작성자: 김효동
+    작성일: 2025-08-27
+-->
+
+<mapper namespace="com.server.KH_StudyProjects_WeatherServer.common.sidemenu.mapper.SmFavoriteLocationMapper">
+
+    <!-- 결과 매핑 -->
+    <resultMap id="SmFavoriteLocationResultMap"
+               type="com.server.KH_StudyProjects_WeatherServer.common.sidemenu.dto.SmFavoriteLocationResponseDto">
+        <id     property="seqNo"            column="SEQ_NO"/>
+        <result property="deviceId"         column="DEVICE_ID"/>
+        <result property="latitude"         column="LATITUDE"/>
+        <result property="longitude"        column="LONGITUDE"/>
+        <result property="addressName"      column="ADDRESS_NAME"/>
+        <result property="region1DepthName" column="REGION_1DEPTH_NAME"/>
+        <result property="region2DepthName" column="REGION_2DEPTH_NAME"/>
+        <result property="region3DepthName" column="REGION_3DEPTH_NAME"/>
+        <result property="sortOrder"        column="SORT_ORDER"/>
+        <result property="createdAt"        column="CREATED_AT"/>
+    </resultMap>
+
+    <!-- 즐겨찾기 위치 추가 -->
+   <insert id="insertFavoriteLocation"
+        parameterType="com.server.KH_StudyProjects_WeatherServer.common.sidemenu.dto.SmFavoriteLocationRequestDto">
+
+        INSERT INTO KH_WEATHER_APP.COM_FAVORITE_LOCATIONS (
+        SEQ_NO,
+        DEVICE_ID,
+        LATITUDE,
+        LONGITUDE,
+        ADDRESS_NAME,
+        REGION_1DEPTH_NAME,
+        REGION_2DEPTH_NAME,
+        REGION_3DEPTH_NAME,
+        SORT_ORDER,
+        CREATED_AT
+        ) VALUES (
+        KH_WEATHER_APP.COM_FAVORITE_LOC_SEQ.NEXTVAL,
+        #{deviceId},
+        #{latitude},
+        #{longitude},
+        #{addressName},
+        #{region1DepthName},
+        #{region2DepthName},
+        #{region3DepthName},
+        (
+        SELECT NVL(MAX(SORT_ORDER), 0) + 1
+        FROM KH_WEATHER_APP.COM_FAVORITE_LOCATIONS
+        WHERE DEVICE_ID = #{deviceId}
+        ),
+        SYSTIMESTAMP
+        )
+    </insert>
+
+    <!-- 사용자별 즐겨찾기 목록 조회 -->
+    <select id="selectFavoriteLocationsByUserId" resultMap="SmFavoriteLocationResultMap">
+        SELECT
+            SEQ_NO,
+            DEVICE_ID,
+            LATITUDE,
+            LONGITUDE,
+            ADDRESS_NAME,
+            REGION_1DEPTH_NAME,
+            REGION_2DEPTH_NAME,
+            REGION_3DEPTH_NAME,
+            SORT_ORDER,
+            CREATED_AT
+        FROM KH_WEATHER_APP.COM_FAVORITE_LOCATIONS
+        WHERE DEVICE_ID = #{deviceId}
+        ORDER BY SORT_ORDER ASC, CREATED_AT DESC
+    </select>
+
+    <!-- 위도/경도 + 디바이스 중복 체크 -->
+    <select id="existsByLatitudeAndLongitude" resultType="boolean">
+        SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END
+        FROM KH_WEATHER_APP.COM_FAVORITE_LOCATIONS
+        WHERE LATITUDE = #{latitude}
+          AND LONGITUDE = #{longitude}
+          AND DEVICE_ID = #{deviceId}
+    </select>
+
+    <!-- 디바이스별 즐겨찾기 개수 -->
+    <select id="countFavoriteLocationsByDeviceId" resultType="int">
+        SELECT COUNT(*)
+        FROM KH_WEATHER_APP.COM_FAVORITE_LOCATIONS
+        WHERE DEVICE_ID = #{deviceId}
+    </select>
+
+    <!-- 즐겨찾기 삭제 (디바이스+좌표 기준) -->
+    <delete id="deleteFavoriteLocation">
+        DELETE FROM KH_WEATHER_APP.COM_FAVORITE_LOCATIONS
+        WHERE DEVICE_ID = #{deviceId}
+          AND LATITUDE  = #{latitude}
+          AND LONGITUDE = #{longitude}
+    </delete>
+
+    <!-- 즐겨찾기 정렬 순서 수정 -->
+    <update id="updateFavoriteLocationSortOrder">
+        UPDATE KH_WEATHER_APP.COM_FAVORITE_LOCATIONS
+        SET SORT_ORDER = #{sortOrder}
+        WHERE DEVICE_ID = #{deviceId}
+          AND LATITUDE  = #{latitude}
+          AND LONGITUDE = #{longitude}
+    </update>
+
+</mapper>
