@@ -54,7 +54,7 @@ public class SmFavoriteLocationService {
         // 1단계: 중복 체크 (동일한 위도/경도 + 디바이스ID 조합이 이미 존재하는지)
         if (smFavoriteLocationMapper.existsByLatitudeAndLongitude(
                 requestDto.getLatitude(), requestDto.getLongitude(), requestDto.getDeviceId())) {
-            throw new RuntimeException("이미 사이드메뉴 즐겨찾기에 등록된 위치입니다.");
+            throw new RuntimeException("이미 즐겨찾기에 등록된 지역입니다.");
         }
         
         // 2단계: DB에 저장
