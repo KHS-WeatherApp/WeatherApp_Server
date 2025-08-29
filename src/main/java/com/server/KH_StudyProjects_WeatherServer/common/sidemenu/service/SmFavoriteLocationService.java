@@ -64,7 +64,7 @@ public class SmFavoriteLocationService {
             // 3단계: 저장된 데이터 조회하여 반환 (SEQ_NO 포함된 완전한 정보)
             return getSmFavoriteLocationByCoordinates(requestDto.getLatitude(), requestDto.getLongitude(), requestDto.getDeviceId());
         } else {
-            throw new RuntimeException("사이드메뉴 즐겨찾기 위치 저장에 실패했습니다.");
+            throw new RuntimeException("즐겨찾기 저장에 실패했습니다.");
         }
     }
     
@@ -83,7 +83,7 @@ public class SmFavoriteLocationService {
     @Transactional(readOnly = true)
     public List<SmFavoriteLocationResponseDto> getSmFavoriteLocations(String deviceId) {
         log.info("사용자 사이드메뉴 즐겨찾기 목록 조회: deviceId={}", deviceId);
-        
+
         return smFavoriteLocationMapper.selectFavoriteLocationsByUserId(deviceId);
     }
     
@@ -99,17 +99,27 @@ public class SmFavoriteLocationService {
      * @param latitude 삭제할 위치의 위도
      * @param longitude 삭제할 위치의 경도
      * @param deviceId 삭제 요청한 디바이스의 ID
+     * @return String 삭제된 지역명
      * @throws RuntimeException 위치를 찾을 수 없거나 권한이 없는 경우
      */
-    public void deleteSmFavoriteLocation(Double latitude, Double longitude, String deviceId) {
+    public String deleteSmFavoriteLocation(Double latitude, Double longitude, String deviceId) {
         log.info("사이드메뉴 즐겨찾기 위치 삭제: lat={}, lng={}, deviceId={}", latitude, longitude, deviceId);
         
-        // 1단계: 실제 삭제 수행 (디바이스ID + 위도/경도로 정확한 위치 식별)
+        // 1단계: 삭제 전에 지역명 조회
+        SmFavoriteLocationResponseDto locationToDelete = getSmFavoriteLocationByCoordinates(latitude, longitude, deviceId);
+        if (locationToDelete == null) {
+            throw new RuntimeException("삭제할 즐겨찾기 위치를 찾을 수 없습니다.");
+        }
+        
+        String addressName = locationToDelete.getAddressName();
+        
+        // 2단계: 실제 삭제 수행 (디바이스ID + 위도/경도로 정확한 위치 식별)
         int result = smFavoriteLocationMapper.deleteFavoriteLocation(deviceId, latitude, longitude);
         if (result > 0) {
-            log.info("사이드메뉴 즐겨찾기 위치 삭제 완료: lat={}, lng={}", latitude, longitude);
+            log.info("사이드메뉴 즐겨찾기 위치 삭제 완료: lat={}, lng={}, addressName={}", latitude, longitude, addressName);
+            return addressName;
         } else {
-            throw new RuntimeException("사이드메뉴 즐겨찾기 위치 삭제에 실패했습니다.");
+            throw new RuntimeException("즐겨찾기 삭제에 실패했습니다.");
         }
     }
     
@@ -161,7 +171,7 @@ public class SmFavoriteLocationService {
             log.info("사이드메뉴 즐겨찾기 위치 정렬 순서 변경 완료: lat={}, lng={}, sortOrder={}", 
                     latitude, longitude, sortOrder);
         } else {
-            throw new RuntimeException("사이드메뉴 즐겨찾기 위치 정렬 순서 변경에 실패했습니다.");
+            throw new RuntimeException("즐겨찾기 정렬 순서 변경에 실패했습니다.");
         }
     }
     

@@ -3,6 +3,7 @@ package com.server.KH_StudyProjects_WeatherServer.common.sidemenu.controller;
 import com.server.KH_StudyProjects_WeatherServer.common.sidemenu.dto.SmFavoriteLocationRequestDto;
 import com.server.KH_StudyProjects_WeatherServer.common.sidemenu.dto.SmFavoriteLocationResponseDto;
 import com.server.KH_StudyProjects_WeatherServer.common.sidemenu.service.SmFavoriteLocationService;
+import com.server.KH_StudyProjects_WeatherServer.common.util.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -43,7 +44,7 @@ public class SmFavoriteLocationController {
      * 사이드메뉴 즐겨찾기 위치 추가 (사이드메뉴 검색 아이템 클릭시 호출)
      */
     @PostMapping("/locations")
-    public ResponseEntity<SmFavoriteLocationResponseDto> addSmFavoriteLocation(
+    public ResponseEntity<ApiResponse<SmFavoriteLocationResponseDto>> addSmFavoriteLocation(
             @RequestBody SmFavoriteLocationRequestDto requestDto) {
         log.info("사이드메뉴 즐겨찾기 위치 추가 요청: {}", requestDto);
         
@@ -54,33 +55,41 @@ public class SmFavoriteLocationController {
         }
         
         SmFavoriteLocationResponseDto response = smFavoriteLocationService.addSmFavoriteLocation(requestDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        
+        // 지역명을 포함한 성공 메시지 생성
+        String successMessage = requestDto.getAddressName() + "이(가) 즐겨찾기에 추가되었습니다";
+        ApiResponse<SmFavoriteLocationResponseDto> apiResponse = ApiResponse.success(successMessage, response);
+        
+        return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
     }
     
     /**
      * 사용자의 사이드메뉴 즐겨찾기 목록 조회
      */
     @GetMapping("/locations")
-    public ResponseEntity<List<SmFavoriteLocationResponseDto>> getSmFavoriteLocations(
+    public ResponseEntity<ApiResponse<List<SmFavoriteLocationResponseDto>>> getSmFavoriteLocations(
             @RequestParam String deviceId) {
         log.info("사이드메뉴 즐겨찾기 목록 조회 요청: deviceId={}", deviceId);
         
         List<SmFavoriteLocationResponseDto> locations = smFavoriteLocationService.getSmFavoriteLocations(deviceId);
-        return ResponseEntity.ok(locations);
+        ApiResponse<List<SmFavoriteLocationResponseDto>> apiResponse = ApiResponse.success("즐겨찾기 목록을 성공적으로 조회했습니다", locations);
+        return ResponseEntity.ok(apiResponse);
     }
     
     /**
      * 사이드메뉴 즐겨찾기 위치 삭제
      */
     @DeleteMapping("/locations")
-    public ResponseEntity<Void> deleteSmFavoriteLocation(
+    public ResponseEntity<ApiResponse<Void>> deleteSmFavoriteLocation(
             @RequestParam Double latitude,
             @RequestParam Double longitude,
             @RequestParam String deviceId) {
         log.info("사이드메뉴 즐겨찾기 위치 삭제 요청: lat={}, lng={}, deviceId={}", latitude, longitude, deviceId);
         
-        smFavoriteLocationService.deleteSmFavoriteLocation(latitude, longitude, deviceId);
-        return ResponseEntity.noContent().build();
+        String deletedAddressName = smFavoriteLocationService.deleteSmFavoriteLocation(latitude, longitude, deviceId);
+        String successMessage = deletedAddressName + "을(를) 즐겨찾기에서 제거했습니다";
+        ApiResponse<Void> apiResponse = ApiResponse.success(successMessage, null);
+        return ResponseEntity.ok(apiResponse);
     }
     
 
@@ -89,7 +98,7 @@ public class SmFavoriteLocationController {
      * 사이드메뉴 즐겨찾기 위치 정렬 순서 변경
      */
     @PatchMapping("/locations/sort-order")
-    public ResponseEntity<Void> updateSmFavoriteLocationSortOrder(
+    public ResponseEntity<ApiResponse<Void>> updateSmFavoriteLocationSortOrder(
             @RequestParam Double latitude,
             @RequestParam Double longitude,
             @RequestParam String deviceId,
@@ -98,7 +107,8 @@ public class SmFavoriteLocationController {
                 latitude, longitude, deviceId, sortOrder);
         
         smFavoriteLocationService.updateSmFavoriteLocationSortOrder(latitude, longitude, deviceId, sortOrder);
-        return ResponseEntity.noContent().build();
+        ApiResponse<Void> apiResponse = ApiResponse.success("정렬 순서가 성공적으로 변경되었습니다", null);
+        return ResponseEntity.ok(apiResponse);
     }
     
     /**
