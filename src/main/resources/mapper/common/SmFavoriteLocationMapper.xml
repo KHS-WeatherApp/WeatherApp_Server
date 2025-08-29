@@ -36,6 +36,7 @@
         <result property="region1DepthName" column="REGION_1DEPTH_NAME"/>
         <result property="region2DepthName" column="REGION_2DEPTH_NAME"/>
         <result property="region3DepthName" column="REGION_3DEPTH_NAME"/>
+        <result property="region3DepthHName" column="REGION_3DEPTH_H_NAME"/>
         <result property="sortOrder"        column="SORT_ORDER"/>
         <result property="createdAt"        column="CREATED_AT"/>
     </resultMap>
@@ -53,6 +54,7 @@
         REGION_1DEPTH_NAME,
         REGION_2DEPTH_NAME,
         REGION_3DEPTH_NAME,
+        REGION_3DEPTH_H_NAME,
         SORT_ORDER,
         CREATED_AT
         ) VALUES (
@@ -64,6 +66,7 @@
         #{region1DepthName},
         #{region2DepthName},
         #{region3DepthName},
+        #{region3DepthHName},
         (
         SELECT NVL(MAX(SORT_ORDER), 0) + 1
         FROM KH_WEATHER_APP.COM_FAVORITE_LOCATIONS
@@ -84,6 +87,7 @@
             REGION_1DEPTH_NAME,
             REGION_2DEPTH_NAME,
             REGION_3DEPTH_NAME,
+            REGION_3DEPTH_H_NAME,
             SORT_ORDER,
             CREATED_AT
         FROM KH_WEATHER_APP.COM_FAVORITE_LOCATIONS

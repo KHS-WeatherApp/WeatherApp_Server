@@ -26,5 +26,6 @@ public class SmFavoriteLocationRequestDto {
     private String region1DepthName; // 시/도
     private String region2DepthName; // 구/군
     private String region3DepthName; // 동/읍/면
+    private String region3DepthHName; // 동/읍/면 한글명
     private String deviceId;         // 디바이스식별번호
 }
