@@ -45,22 +45,16 @@ public class SmFavoriteLocationController {
     @PostMapping("/locations")
     public ResponseEntity<SmFavoriteLocationResponseDto> addSmFavoriteLocation(
             @RequestBody SmFavoriteLocationRequestDto requestDto) {
-        try {
-            log.info("사이드메뉴 즐겨찾기 위치 추가 요청: {}", requestDto);
-            
-            // 필수 값 검증
-            if (requestDto.getAddressName() == null || requestDto.getLatitude() == null || 
-                requestDto.getLongitude() == null || requestDto.getDeviceId() == null) {
-                return ResponseEntity.badRequest().build();
-            }
-            
-            SmFavoriteLocationResponseDto response = smFavoriteLocationService.addSmFavoriteLocation(requestDto);
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
-            
-        } catch (Exception e) {
-            log.error("사이드메뉴 즐겨찾기 위치 추가 실패: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        log.info("사이드메뉴 즐겨찾기 위치 추가 요청: {}", requestDto);
+        
+        // 필수 값 검증
+        if (requestDto.getAddressName() == null || requestDto.getLatitude() == null || 
+            requestDto.getLongitude() == null || requestDto.getDeviceId() == null) {
+            return ResponseEntity.badRequest().build();
         }
+        
+        SmFavoriteLocationResponseDto response = smFavoriteLocationService.addSmFavoriteLocation(requestDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
     
     /**
@@ -69,16 +63,10 @@ public class SmFavoriteLocationController {
     @GetMapping("/locations")
     public ResponseEntity<List<SmFavoriteLocationResponseDto>> getSmFavoriteLocations(
             @RequestParam String deviceId) {
-        try {
-            log.info("사이드메뉴 즐겨찾기 목록 조회 요청: deviceId={}", deviceId);
-            
-            List<SmFavoriteLocationResponseDto> locations = smFavoriteLocationService.getSmFavoriteLocations(deviceId);
-            return ResponseEntity.ok(locations);
-            
-        } catch (Exception e) {
-            log.error("사이드메뉴 즐겨찾기 목록 조회 실패: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        log.info("사이드메뉴 즐겨찾기 목록 조회 요청: deviceId={}", deviceId);
+        
+        List<SmFavoriteLocationResponseDto> locations = smFavoriteLocationService.getSmFavoriteLocations(deviceId);
+        return ResponseEntity.ok(locations);
     }
     
     /**
@@ -89,16 +77,10 @@ public class SmFavoriteLocationController {
             @RequestParam Double latitude,
             @RequestParam Double longitude,
             @RequestParam String deviceId) {
-        try {
-            log.info("사이드메뉴 즐겨찾기 위치 삭제 요청: lat={}, lng={}, deviceId={}", latitude, longitude, deviceId);
-            
-            smFavoriteLocationService.deleteSmFavoriteLocation(latitude, longitude, deviceId);
-            return ResponseEntity.noContent().build();
-            
-        } catch (Exception e) {
-            log.error("사이드메뉴 즐겨찾기 위치 삭제 실패: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        log.info("사이드메뉴 즐겨찾기 위치 삭제 요청: lat={}, lng={}, deviceId={}", latitude, longitude, deviceId);
+        
+        smFavoriteLocationService.deleteSmFavoriteLocation(latitude, longitude, deviceId);
+        return ResponseEntity.noContent().build();
     }
     
 
@@ -112,17 +94,11 @@ public class SmFavoriteLocationController {
             @RequestParam Double longitude,
             @RequestParam String deviceId,
             @RequestParam Integer sortOrder) {
-        try {
-            log.info("정렬 순서 변경 요청: lat={}, lng={}, deviceId={}, sortOrder={}", 
-                    latitude, longitude, deviceId, sortOrder);
-            
-            smFavoriteLocationService.updateSmFavoriteLocationSortOrder(latitude, longitude, deviceId, sortOrder);
-            return ResponseEntity.noContent().build();
-            
-        } catch (Exception e) {
-            log.error("정렬 순서 변경 실패: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        log.info("정렬 순서 변경 요청: lat={}, lng={}, deviceId={}, sortOrder={}", 
+                latitude, longitude, deviceId, sortOrder);
+        
+        smFavoriteLocationService.updateSmFavoriteLocationSortOrder(latitude, longitude, deviceId, sortOrder);
+        return ResponseEntity.noContent().build();
     }
     
     /**
@@ -133,15 +109,9 @@ public class SmFavoriteLocationController {
             @RequestParam Double latitude, 
             @RequestParam Double longitude, 
             @RequestParam String deviceId) {
-        try {
-            log.info("중복 체크 요청: lat={}, lng={}, deviceId={}", latitude, longitude, deviceId);
-            
-            boolean isDuplicate = smFavoriteLocationService.checkDuplicateLocation(latitude, longitude, deviceId);
-            return ResponseEntity.ok(isDuplicate);
-            
-        } catch (Exception e) {
-            log.error("중복 체크 실패: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        log.info("중복 체크 요청: lat={}, lng={}, deviceId={}", latitude, longitude, deviceId);
+        
+        boolean isDuplicate = smFavoriteLocationService.checkDuplicateLocation(latitude, longitude, deviceId);
+        return ResponseEntity.ok(isDuplicate);
     }
 }
