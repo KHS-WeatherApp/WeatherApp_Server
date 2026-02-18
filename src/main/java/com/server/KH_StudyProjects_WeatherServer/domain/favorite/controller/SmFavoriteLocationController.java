@@ -32,7 +32,9 @@ public class SmFavoriteLocationController {
                 || requestDto.getLatitude() == null
                 || requestDto.getLongitude() == null
                 || requestDto.getDeviceId() == null) {
-            return ResponseEntity.badRequest().build();
+            ApiResponse<SmFavoriteLocationResponseDto> apiResponse =
+                    ApiResponse.error("필수 요청값(addressName, latitude, longitude, deviceId)이 누락되었습니다.");
+            return ResponseEntity.badRequest().body(apiResponse);
         }
 
         SmFavoriteLocationResponseDto response = smFavoriteLocationService.addSmFavoriteLocation(requestDto);
@@ -85,13 +87,14 @@ public class SmFavoriteLocationController {
 
     /** 즐겨찾기 중복 여부 확인 */
     @GetMapping("/locations/check-duplicate")
-    public ResponseEntity<Boolean> checkDuplicateLocation(
+    public ResponseEntity<ApiResponse<Boolean>> checkDuplicateLocation(
             @RequestParam Double latitude,
             @RequestParam Double longitude,
             @RequestParam String deviceId) {
         log.info("중복 확인 요청: lat={}, lng={}, deviceId={}", latitude, longitude, deviceId);
 
         boolean isDuplicate = smFavoriteLocationService.checkDuplicateLocation(latitude, longitude, deviceId);
-        return ResponseEntity.ok(isDuplicate);
+        ApiResponse<Boolean> apiResponse = ApiResponse.success("즐겨찾기 중복 여부를 조회했습니다.", isDuplicate);
+        return ResponseEntity.ok(apiResponse);
     }
 }

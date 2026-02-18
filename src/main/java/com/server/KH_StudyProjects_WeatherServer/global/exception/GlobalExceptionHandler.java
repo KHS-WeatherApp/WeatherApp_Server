@@ -6,6 +6,8 @@ import com.server.KH_StudyProjects_WeatherServer.global.util.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -13,6 +15,19 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
+
+    /** 요청 바디 검증 실패 예외 처리 (400) */
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiResponse<Void>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        FieldError fieldError = e.getBindingResult().getFieldError();
+        String message = fieldError != null
+                ? String.format("요청값이 유효하지 않습니다. field=%s", fieldError.getField())
+                : "요청값이 유효하지 않습니다.";
+
+        log.warn("요청 검증 실패: {}", message);
+        ApiResponse<Void> response = ApiResponse.error(message);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
 
     /** 즐겨찾기 중복 예외 처리 (409) */
     @ExceptionHandler(DuplicateLocationException.class)
