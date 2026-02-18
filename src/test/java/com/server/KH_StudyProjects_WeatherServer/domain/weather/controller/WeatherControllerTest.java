@@ -2,7 +2,6 @@ package com.server.KH_StudyProjects_WeatherServer.domain.weather.controller;
 
 import com.server.KH_StudyProjects_WeatherServer.domain.weather.dto.WeatherRequestDto;
 import com.server.KH_StudyProjects_WeatherServer.domain.weather.service.WeatherService;
-import com.server.KH_StudyProjects_WeatherServer.global.util.ApiResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +33,7 @@ class WeatherControllerTest {
     @Test
     @DisplayName("정상 요청이면 날씨 조회가 성공한다")
     void getWeatherSuccess() throws Exception {
-        doReturn(ResponseEntity.ok(ApiResponse.success("날씨 정보를 성공적으로 조회했습니다.", Map.of("source", "openmeteo"))))
+        doReturn(ResponseEntity.ok(Map.of("source", "openmeteo")))
                 .when(weatherService).getWeather(any(WeatherRequestDto.class));
 
         mockMvc.perform(post("/api/weather")
@@ -47,8 +46,7 @@ class WeatherControllerTest {
                                 }
                                 """))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data.source").value("openmeteo"));
+                .andExpect(jsonPath("$.source").value("openmeteo"));
 
         verify(weatherService).getWeather(any(WeatherRequestDto.class));
     }

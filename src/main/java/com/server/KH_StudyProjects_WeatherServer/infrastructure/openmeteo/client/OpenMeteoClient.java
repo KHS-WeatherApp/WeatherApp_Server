@@ -2,11 +2,14 @@ package com.server.KH_StudyProjects_WeatherServer.infrastructure.openmeteo.clien
 
 import com.server.KH_StudyProjects_WeatherServer.global.exception.ExternalApiException;
 import com.server.KH_StudyProjects_WeatherServer.global.logging.LogCode;
+import com.server.KH_StudyProjects_WeatherServer.infrastructure.openmeteo.dto.OpenMeteoApiResponseDto;
+import com.server.KH_StudyProjects_WeatherServer.infrastructure.openmeteo.mapper.OpenMeteoResponseMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.ResourceAccessException;
@@ -20,31 +23,29 @@ import java.util.Optional;
 /** Open-Meteo 외부 API 호출 클라이언트 */
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class OpenMeteoClient {
 
     /** Open-Meteo 날씨 API 기본 URL */
     private static final String WEATHER_BASE_URL = "https://api.open-meteo.com/v1";
     /** Open-Meteo 대기질 API 기본 URL */
     private static final String FINE_DUST_BASE_URL = "https://air-quality-api.open-meteo.com/v1";
-    /** 연결 타임아웃(밀리초) */
-    private static final int CONNECT_TIMEOUT_MS = 3000;
-    /** 응답 타임아웃(밀리초) */
-    private static final int READ_TIMEOUT_MS = 5000;
-    /** 타임아웃이 적용된 RestTemplate */
-    private final RestTemplate restTemplate = createRestTemplate();
+    /** Open-Meteo 전용 RestTemplate */
+    @Qualifier("openMeteoRestTemplate")
+    private final RestTemplate restTemplate;
 
     /** 날씨 API 호출 */
-    public Optional<Map<String, Object>> fetchWeather(Double latitude, Double longitude, String queryParam) {
+    public Optional<OpenMeteoApiResponseDto> fetchWeather(Double latitude, Double longitude, String queryParam) {
         return callApi(WEATHER_BASE_URL, "/forecast", latitude, longitude, queryParam);
     }
 
     /** 대기질 API 호출 */
-    public Optional<Map<String, Object>> fetchFineDust(Double latitude, Double longitude, String queryParam) {
+    public Optional<OpenMeteoApiResponseDto> fetchFineDust(Double latitude, Double longitude, String queryParam) {
         return callApi(FINE_DUST_BASE_URL, "/air-quality", latitude, longitude, queryParam);
     }
 
     /** 공통 GET 호출 후 응답 바디 반환 */
-    private Optional<Map<String, Object>> callApi(
+    private Optional<OpenMeteoApiResponseDto> callApi(
             String baseUrl,
             String path,
             Double latitude,
@@ -73,12 +74,13 @@ public class OpenMeteoClient {
                         LogCode.EXT_204_001, path, latitude, longitude);
                 return Optional.empty();
             }
+            OpenMeteoApiResponseDto mappedResponse = OpenMeteoResponseMapper.fromRawMap(responseBody, path);
             log.info("[{}] openmeteo.success path={} status={} keys={}",
                     LogCode.EXT_200_001,
                     path,
                     response.getStatusCode().value(),
-                    responseBody.keySet());
-            return Optional.of(responseBody);
+                    mappedResponse.toApiPayload().keySet());
+            return Optional.of(mappedResponse);
         } catch (HttpStatusCodeException e) {
             log.error("[{}] openmeteo.http-status-fail path={} status={} message={}",
                     LogCode.EXT_502_001, path, e.getStatusCode().value(), e.getMessage(), e);
@@ -111,16 +113,9 @@ public class OpenMeteoClient {
                 .append("&longitude=")
                 .append(longitude)
                 .append("&")
+
                 .append(queryParam)
                 .toString();
-    }
-
-    /** 연결/응답 타임아웃 설정이 반영된 RestTemplate 생성 */
-    private RestTemplate createRestTemplate() {
-        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-        requestFactory.setConnectTimeout(CONNECT_TIMEOUT_MS);
-        requestFactory.setReadTimeout(READ_TIMEOUT_MS);
-        return new RestTemplate(requestFactory);
     }
 
     /** 예외 체인에 SocketTimeoutException이 있으면 true 반환 */

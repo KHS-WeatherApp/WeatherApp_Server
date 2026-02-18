@@ -29,3 +29,9 @@ logging:
     # MyBatis 로그도 보고 싶다면 (선택):
     # com.server.KH_StudyProjects_WeatherServer: debug
     # org.mybatis: debug
+
+# Open-Meteo 클라이언트 설정
+openmeteo:
+  client:
+    connect-timeout-ms: 3000
+    read-timeout-ms: 5000

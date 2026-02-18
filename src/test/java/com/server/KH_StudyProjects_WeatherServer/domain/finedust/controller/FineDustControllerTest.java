@@ -2,7 +2,6 @@ package com.server.KH_StudyProjects_WeatherServer.domain.finedust.controller;
 
 import com.server.KH_StudyProjects_WeatherServer.domain.finedust.dto.FineDustRequestDto;
 import com.server.KH_StudyProjects_WeatherServer.domain.finedust.service.FineDustService;
-import com.server.KH_StudyProjects_WeatherServer.global.util.ApiResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +33,7 @@ class FineDustControllerTest {
     @Test
     @DisplayName("정상 요청이면 대기질 조회가 성공한다")
     void getFineDustSuccess() throws Exception {
-        doReturn(ResponseEntity.ok(ApiResponse.success("대기질 정보를 성공적으로 조회했습니다.", Map.of("source", "openmeteo-air"))))
+        doReturn(ResponseEntity.ok(Map.of("source", "openmeteo-air")))
                 .when(fineDustService).getFineDust(any(FineDustRequestDto.class));
 
         mockMvc.perform(post("/api/airPollution")
@@ -47,8 +46,7 @@ class FineDustControllerTest {
                                 }
                                 """))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data.source").value("openmeteo-air"));
+                .andExpect(jsonPath("$.source").value("openmeteo-air"));
 
         verify(fineDustService).getFineDust(any(FineDustRequestDto.class));
     }
