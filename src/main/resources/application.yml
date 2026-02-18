@@ -20,7 +20,7 @@ spring:
 mybatis:
   config-location: classpath:mybatis-config.xml
   mapper-locations: classpath:mapper/**/*.xml
-  type-aliases-package: com.server.KH_StudyProjects_WeatherServer.common.favorite.dto
+  type-aliases-package: com.server.KH_StudyProjects_WeatherServer.domain.favorite.dto
 
 # 로깅 (최상위)
 logging:

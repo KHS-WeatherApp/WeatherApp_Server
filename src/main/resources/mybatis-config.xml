@@ -15,6 +15,6 @@
     
     <!-- 타입 별칭 설정 -->
     <typeAliases>
-        <package name="com.server.KH_StudyProjects_WeatherServer.common.favorite.dto"/>
+        <package name="com.server.KH_StudyProjects_WeatherServer.domain.favorite.dto"/>
     </typeAliases>
 </configuration>
