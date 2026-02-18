@@ -1,0 +1,31 @@
+﻿server:
+  port: 8080
+  address: 0.0.0.0
+
+spring:
+  datasource:
+    driver-class-name: oracle.jdbc.OracleDriver
+    url: jdbc:oracle:thin:@//61.73.18.134:1521/MYXE
+    username: sys
+    password: Akstp3ckd
+    hikari:
+      pool-name: HikariPool-Oracle
+      maximum-pool-size: 5
+      connection-test-query: "SELECT 1 FROM DUAL"
+      data-source-properties:
+        internal_logon: SYSDBA
+        current_schema: KH_WEATHER_APP
+
+# MyBatis 설정 (spring 블록 바깥, 최상위)
+mybatis:
+  config-location: classpath:mybatis-config.xml
+  mapper-locations: classpath:mapper/**/*.xml
+  type-aliases-package: com.server.KH_StudyProjects_WeatherServer.common.favorite.dto
+
+# 로깅 (최상위)
+logging:
+  level:
+    org.hibernate.SQL: debug
+    # MyBatis 로그도 보고 싶다면 (선택):
+    # com.server.KH_StudyProjects_WeatherServer: debug
+    # org.mybatis: debug

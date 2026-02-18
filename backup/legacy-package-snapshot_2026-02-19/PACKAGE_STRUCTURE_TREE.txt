@@ -1,0 +1,33 @@
+﻿[Legacy Package Structure Snapshot]
+root: src/main/java/com/server/KH_StudyProjects_WeatherServer
+
+api/
+  openmeteo/
+    controller/
+      OpenApiController.java
+    service/
+      OpenApiService.java
+    manager/
+      OpenApiManager.java
+
+common/
+  exception/
+    GlobalExceptionHandler.java
+  util/
+    ApiResponse.java
+  sidemenu/
+    controller/
+      SmFavoriteLocationController.java
+    service/
+      SmFavoriteLocationService.java
+    mapper/
+      SmFavoriteLocationMapper.java
+    dto/
+      SmFavoriteLocationRequestDto.java
+      SmFavoriteLocationResponseDto.java
+
+resources/
+  mapper/common/
+    SmFavoriteLocationMapper.xml
+  application.yml
+  mybatis-config.xml
