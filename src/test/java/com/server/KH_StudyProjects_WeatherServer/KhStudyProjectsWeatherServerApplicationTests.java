@@ -7,9 +7,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class KhStudyProjectsWeatherServerApplicationTests {
 
-	/** 스프링 컨텍스트가 정상 로딩되는지 확인 */
-	@Test
-	void contextLoads() {
-	}
-
+    /** 스프링 컨텍스트가 정상 로딩되는지 확인 */
+    @Test
+    void contextLoads() {
+    }
 }

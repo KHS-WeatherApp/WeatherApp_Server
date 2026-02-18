@@ -19,7 +19,7 @@ public class WeatherService {
 
     /** 외부 API에서 날씨 정보를 조회해 응답한다. */
     public ResponseEntity<?> getWeather(WeatherRequestDto requestDto) {
-        log.info("Weather request: {}", requestDto);
+        log.info("날씨 조회 요청: {}", requestDto);
         Optional<Map<String, Object>> response = openMeteoClient.fetchWeather(
                 requestDto.getLatitude(),
                 requestDto.getLongitude(),

@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class FineDustController {
     private final FineDustService fineDustService;
 
-    /** 추가 날씨 정보 - 미세먼지,초미세먼지 */
+    /** 대기질 정보 조회 (날씨 화면에서 사용) */
     @PostMapping("/api/airPollution")
     public ResponseEntity<?> getFineDust(@Valid @RequestBody FineDustRequestDto requestDto) {
         return fineDustService.getFineDust(requestDto);

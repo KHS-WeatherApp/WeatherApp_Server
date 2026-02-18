@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 import java.util.Optional;
 
-/** 대기질(미세먼지) 도메인 서비스 */
+/** 대기질 도메인 서비스 */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -19,7 +19,7 @@ public class FineDustService {
 
     /** 외부 API에서 대기질 정보를 조회해 응답한다. */
     public ResponseEntity<?> getFineDust(FineDustRequestDto requestDto) {
-        log.info("Fine dust request: {}", requestDto);
+        log.info("대기질 조회 요청: {}", requestDto);
         Optional<Map<String, Object>> response = openMeteoClient.fetchFineDust(
                 requestDto.getLatitude(),
                 requestDto.getLongitude(),

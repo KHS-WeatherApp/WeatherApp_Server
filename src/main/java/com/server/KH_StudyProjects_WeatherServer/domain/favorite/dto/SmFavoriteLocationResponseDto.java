@@ -9,10 +9,10 @@ import java.time.LocalDateTime;
 
 /**
  * 사이드메뉴 즐겨찾기 위치 응답 DTO
- * 
+ *
  * COM_FAVORITE_LOCATIONS 테이블에서 조회된 데이터를 Android 앱으로 전달할 때 사용
  * 즐겨찾기 목록 조회, 상세 조회, 추가 후 반환 등에 활용
- * 
+ *
  * @author 김효동
  * @since 2025-08-27
  */
@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SmFavoriteLocationResponseDto {
-    
+
     private Long seqNo;
     private String deviceId;        // 디바이스식별번호
     private Double latitude;        // 위도
