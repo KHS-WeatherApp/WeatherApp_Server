@@ -1,6 +1,7 @@
 package com.server.KH_StudyProjects_WeatherServer.infrastructure.openmeteo.client;
 
 import com.server.KH_StudyProjects_WeatherServer.global.exception.ExternalApiException;
+import com.server.KH_StudyProjects_WeatherServer.global.logging.LogCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -51,6 +52,13 @@ public class OpenMeteoClient {
             String queryParam
     ) {
         try {
+            log.info("[{}] openmeteo.request path={} latitude={} longitude={} queryLength={}",
+                    LogCode.EXT_REQ_001,
+                    path,
+                    latitude,
+                    longitude,
+                    queryParam != null ? queryParam.length() : 0);
+
             String apiUri = buildUrl(baseUrl, path, latitude, longitude, queryParam);
             ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
                     new URI(apiUri),
@@ -61,23 +69,34 @@ public class OpenMeteoClient {
 
             Map<String, Object> responseBody = response.getBody();
             if (responseBody == null || responseBody.isEmpty()) {
+                log.warn("[{}] openmeteo.empty-response path={} latitude={} longitude={}",
+                        LogCode.EXT_204_001, path, latitude, longitude);
                 return Optional.empty();
             }
+            log.info("[{}] openmeteo.success path={} status={} keys={}",
+                    LogCode.EXT_200_001,
+                    path,
+                    response.getStatusCode().value(),
+                    responseBody.keySet());
             return Optional.of(responseBody);
         } catch (HttpStatusCodeException e) {
-            log.error("Open-Meteo 상태코드 오류: {}", e.getStatusCode(), e);
+            log.error("[{}] openmeteo.http-status-fail path={} status={} message={}",
+                    LogCode.EXT_502_001, path, e.getStatusCode().value(), e.getMessage(), e);
             throw ExternalApiException.badGateway("외부 API 응답 오류가 발생했습니다.");
         } catch (ResourceAccessException e) {
             if (isTimeoutException(e)) {
-                log.error("Open-Meteo 타임아웃 발생", e);
+                log.error("[{}] openmeteo.timeout path={} message={}",
+                        LogCode.EXT_504_001, path, e.getMessage(), e);
                 throw ExternalApiException.gatewayTimeout("외부 API 호출 시간이 초과되었습니다.");
             }
-            log.error("Open-Meteo 연결 오류 발생", e);
+            log.error("[{}] openmeteo.connection-fail path={} message={}",
+                    LogCode.EXT_502_002, path, e.getMessage(), e);
             throw ExternalApiException.badGateway("외부 API 연결 오류가 발생했습니다.");
         } catch (ExternalApiException e) {
             throw e;
         } catch (Exception e) {
-            log.error("Open-Meteo 호출 중 예기치 못한 오류", e);
+            log.error("[{}] openmeteo.unexpected-fail path={} message={}",
+                    LogCode.EXT_502_003, path, e.getMessage(), e);
             throw ExternalApiException.badGateway("외부 API 호출 중 오류가 발생했습니다.");
         }
     }
